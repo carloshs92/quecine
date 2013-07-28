@@ -34,11 +34,35 @@ def getCines(url, cine):
             print option.string.encode('utf-8', 'ignore')
 
 
-# Defino URL
-url = "http://www.cineplanet.com.pe/cartelera.php"
+def getHorarios(url, cine):
+    soup = getBeautifulSoup(url)
 
-getPeliculas(url, 'cineplanet')
+    if cine == 'cineplanet':
+        for option in soup.find_all('option'):
+            print '######################'
+            print option.string.encode('utf-8', 'ignore')
+            print '######################'
+            peli = option.attrs['value']
+            soup = getBeautifulSoup(url + "?complejo=%s" % peli)
+            n = 1
+            cartelera = dict()
+
+            for a in soup.find_all('a', class_="titulo_pelicula5"):
+                var = a.string.encode('utf-8', 'ignore').strip()
+                if n%2 == 0:
+                    lista.append(var)
+                    cartelera[len(cartelera)+1] = lista
+                else:
+                    lista = list()
+                    lista.append(var)
+                n = n + 1
+            print cartelera
+
+# Defino URL
+#url = "http://www.cineplanet.com.pe/cartelera.php"
+
+#getPeliculas(url, 'cineplanet')
 
 url = "http://www.cineplanet.com.pe/nuestroscines.php"
 
-getCines(url, 'cineplanet')
+getHorarios(url, 'cineplanet')
