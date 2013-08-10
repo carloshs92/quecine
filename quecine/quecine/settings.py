@@ -1,5 +1,6 @@
 # -*- coding: utf-8 *-*
 # Django settings for quecine project.
+
 from os.path import dirname, join, realpath, split
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
@@ -20,6 +21,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'dco67f12vr4lko',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
+        'HOST' : 'ec2-54-221-204-45.compute-1.amazonaws.com',
         'USER': 'pnikxvvnpaabxn',
         'PASSWORD': 'bd3HwhxaMRm5Yv3nJ8cdkIh9g1',
         'PORT': '5432',                      # Set to empty string for default.
