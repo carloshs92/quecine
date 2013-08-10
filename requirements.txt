@@ -1,4 +1,4 @@
-BeautifulSoup==3.2.1
+BeautifulSoup==4.2.0
 Django==1.5.1
 argparse==1.2.1
 dj-database-url==0.2.2
