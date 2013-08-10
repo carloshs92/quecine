@@ -1,6 +1,7 @@
 # -*- coding: utf-8 *-*
 # Django settings for quecine project.
 from os.path import dirname, join, realpath, split
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -16,13 +17,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'cine.db',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'dco67f12vr4lko',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'USER': 'pnikxvvnpaabxn',
+        'PASSWORD': 'bd3HwhxaMRm5Yv3nJ8cdkIh9g1',
+        'PORT': '5432',                      # Set to empty string for default.
     }
 }
 
@@ -55,12 +55,12 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = realpath(join(ROOT_PATH, 'media'))
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -162,3 +162,10 @@ LOGGING = {
         },
     }
 }
+
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+DATABASES['default'] = dj_database_url.config()
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
