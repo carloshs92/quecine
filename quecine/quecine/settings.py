@@ -17,19 +17,20 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASES = {
-  'default': {
-    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'dco67f12vr4lko',
-    'HOST': 'ec2-54-221-204-45.compute-1.amazonaws.com',
-    'PORT': 5432,
-    'USER': 'pnikxvvnpaabxn',
-    'PASSWORD': 'bd3HwhxaMRm5Yv3nJ8cdkIh9g1'
-  }
-} 
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'dco67f12vr4lko',                      # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        'USER': 'pnikxvvnpaabxn',
+        'PASSWORD': 'bd3HwhxaMRm5Yv3nJ8cdkIh9g1',
+        'HOST' : 'ec2-54-221-204-45.compute-1.amazonaws.com',
+        'PORT': '5432',                      # Set to empty string for default.
+    }
+}
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -67,39 +68,37 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = realpath(join(SYSTEM_PATH, 'static'))
+STATIC_ROOT = ''
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = (join(ROOT_PATH, 'static'),)
-#STATICFILES_DIRS = (
+STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-#)
+    join(ROOT_PATH, 'static'),
+)
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-# 'django.contrib.staticfiles.finders.DefaultStorageFinder',
+#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '6yhx!=a#*c^9+=t*c4qgm5kg+122=1q-44$s#y+l2!8ljt4s82'
 
-
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-# 'django.template.loaders.eggs.Loader',
+#     'django.template.loaders.eggs.Loader',
 )
-
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
@@ -115,17 +114,16 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'project.urls'
+ROOT_URLCONF = 'quecine.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'project.wsgi.application'
+WSGI_APPLICATION = 'quecine.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    realpath(join(ROOT_PATH, 'templates')),#realpath('templates')
-    #os.path.join(RUTA_PROYECTO,'templates'),
+    realpath(join(ROOT_PATH, 'templates')),
 )
 
 INSTALLED_APPS = (
