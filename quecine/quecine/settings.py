@@ -1,8 +1,9 @@
-# -*- coding: utf-8 *-*
-# Django settings for quecine project.
+# -*- coding: utf-8 -*-
 
 from os.path import dirname, join, realpath, split
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+#import dj_database_url
+#import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -10,10 +11,11 @@ TEMPLATE_DEBUG = DEBUG
 SYSTEM_PATH, PROJECT_DIR = split(realpath(dirname(__file__)))
 ROOT_PATH = dirname(__file__)
 
+#RUTA_PROYECTO = os.path.dirname(os.path.realpath(__file__))
+
 ADMINS = (
     ('Carlos Huamaní', 'carlos.hs.92@gmail.com'),
 )
-
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -67,37 +69,39 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = realpath(join(SYSTEM_PATH, 'static'))
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = (
+STATICFILES_DIRS = (join(ROOT_PATH, 'static'),)
+#STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    join(ROOT_PATH, 'static'),
-)
+#)
 
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+# 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '6yhx!=a#*c^9+=t*c4qgm5kg+122=1q-44$s#y+l2!8ljt4s82'
 
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+# 'django.template.loaders.eggs.Loader',
 )
+
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
@@ -113,10 +117,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'quecine.urls'
+ROOT_URLCONF = 'project.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'quecine.wsgi.application'
+WSGI_APPLICATION = 'project.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -139,7 +143,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
