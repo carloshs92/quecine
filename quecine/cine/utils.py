@@ -18,5 +18,5 @@ def getBeautifulSoup(url):
     # Cierro la conexion
     response.close()
     # Creo el Soup
-    Soup = BeautifulSoup.BeautifulSoup
+    Soup = BeautifulSoup
     return Soup(html_text)
