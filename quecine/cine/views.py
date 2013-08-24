@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from .utils import getBeautifulSoup
 from .models import Pelicula, Cine, CinePeli
+import json
 # Create your views here.
 
 
@@ -17,14 +18,23 @@ def home(request):
 
 
 def sincronizar(request):
-    #getPeliculas("http://www.cineplanet.com.pe/cartelera.php", 'cineplanet')
-    #getCines("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
-    getHorarios("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
+    Pelicula.objects.all().delete()
+    Cine.objects.all().delete()
+    getPeliculas("http://www.cineplanet.com.pe/cartelera.php", 'cineplanet')
+    getCines("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
+    #getHorarios("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
     data = dict()
     data['pelicula'] = Pelicula.objects.all()
     data['cine'] = Cine.objects.all()
     return render_to_response(
         'home/data.html', data,
+        context_instance=RequestContext(request))
+
+
+def jsonpeliculas(request):
+    peliculas = Pelicula.objects.all()
+    return render_to_response(
+        'home/json.html', {'peliculas':json.dumps(peliculas)},
         context_instance=RequestContext(request))
 
 
