@@ -1,8 +1,5 @@
 # -*- coding: utf-8 *-*
-try:
-    from bs4 import BeautifulSoup
-except:
-    import BeautifulSoup
+import BeautifulSoup
 import urllib2
 
 
