@@ -1,5 +1,8 @@
 # -*- coding: utf-8 *-*
-import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+except:
+    import BeautifulSoup
 import urllib2
 
 
@@ -15,4 +18,5 @@ def getBeautifulSoup(url):
     # Cierro la conexion
     response.close()
     # Creo el Soup
-    return BeautifulSoup(html_text)
+    Soup = BeautifulSoup.BeautifulSoup
+    return Soup(html_text)
