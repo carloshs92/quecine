@@ -2,9 +2,16 @@
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from .utils import getBeautifulSoup
+#from .utils import getBeautifulSoup
 from .models import Pelicula, Cine, CinePeli
 import json
+# BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+except:
+    from BeautifulSoup import BeautifulSoup as Soup
+import urllib2
+
 # Create your views here.
 
 
@@ -36,6 +43,21 @@ def jsonpeliculas(request):
     return render_to_response(
         'home/json.html', {'peliculas':json.dumps(peliculas)},
         context_instance=RequestContext(request))
+
+
+def getBeautifulSoup(url):
+    # Agrego agente
+    headers = {'User-Agent': 'Mozilla 5.10'}
+    # Creo el Request
+    request = urllib2.Request(url, None, headers)
+    # Consigo la data
+    response = urllib2.urlopen(request)
+    # Obtengo el HTML
+    html_text = response.read()
+    # Cierro la conexion
+    response.close()
+    # Creo el Soup
+    return Soup(html_text)
 
 
 def getPeliculas(url, cine):
