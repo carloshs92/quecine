@@ -9,7 +9,7 @@ import json
 try:
     from bs4 import BeautifulSoup as Soup
 except:
-    import BeautifulSoup as Soup
+    from BeautifulSoup import Soup
 import urllib2
 
 # Create your views here.
