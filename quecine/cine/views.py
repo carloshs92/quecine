@@ -7,9 +7,9 @@ from .models import Pelicula, Cine, CinePeli
 import json
 # BeautifulSoup
 try:
-    from bs4 import BeautifulSoup
+    from bs4 import BeautifulSoup as Soup
 except:
-    from BeautifulSoup import BeautifulSoup as Soup
+    import BeautifulSoup as Soup
 import urllib2
 
 # Create your views here.
