@@ -2,17 +2,9 @@
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-#from .utils import getBeautifulSoup
-from .models import Pelicula, Cine, CinePeli
+from .utils import getBeautifulSoup
+from .models import Pelicula, Cine #, CinePeli
 import json
-# BeautifulSoup
-try:
-    from bs4 import BeautifulSoup as Soup
-except:
-    from BeautifulSoup import BeautifulSoup as Soup
-import urllib2
-
-# Create your views here.
 
 
 def home(request):
@@ -27,8 +19,9 @@ def home(request):
 def sincronizar(request):
     Pelicula.objects.all().delete()
     Cine.objects.all().delete()
-    getPeliculas("http://www.cineplanet.com.pe/cartelera.php", 'cineplanet')
-    getCines("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
+    getPeliculas("http://www.cinemark-peru.com/cartelera", 'cinemark')
+    #getPeliculas("http://www.cineplanet.com.pe/cartelera.php", 'cineplanet')
+    #getCines("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
     #getHorarios("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
     data = dict()
     data['pelicula'] = Pelicula.objects.all()
@@ -41,37 +34,26 @@ def sincronizar(request):
 def jsonpeliculas(request):
     peliculas = Pelicula.objects.all()
     return render_to_response(
-        'home/json.html', {'peliculas':json.dumps(peliculas)},
+        'home/json.html', {'peliculas': json.dumps(peliculas)},
         context_instance=RequestContext(request))
 
-
-def getBeautifulSoup(url):
-    # Agrego agente
-    headers = {'User-Agent': 'Mozilla 5.10'}
-    # Creo el Request
-    request = urllib2.Request(url, None, headers)
-    # Consigo la data
-    response = urllib2.urlopen(request)
-    # Obtengo el HTML
-    html_text = response.read()
-    # Cierro la conexion
-    response.close()
-    # Creo el Soup
-    return Soup(html_text)
+####### Utlidades
 
 
 def getPeliculas(url, cine):
     soup = getBeautifulSoup(url)
     if cine == 'cineplanet':
         # Obtengo Peliculas
+        print soup.find_all('td')
         for td in soup.find_all('td', class_="titulo_pelicula"):
             peli = Pelicula(pelicula=td.string.encode('utf-8', 'ignore'))
             peli.save()
     elif cine == 'cinemark':
         for a in soup.find_all('a', class_="black"):
-            peli = a.string.encode('utf-8', 'ignore')
-            if peli not in ['Olvidaste tu contraseña?','Regístrate','Inicio']:
-                print peli
+            title = a.string.encode('utf-8', 'ignore')
+            if title not in ['Olvidaste tu contraseña?', 'Regístrate', 'Inicio']:
+                peli = Pelicula(pelicula=title.upper())
+                peli.save()
 
 
 def getCines(url, cine):

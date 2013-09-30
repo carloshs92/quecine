@@ -1,6 +1,11 @@
 # -*- coding: utf-8 *-*
 import urllib2
-from bs4 import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup as Soup
+except:
+    from BeautifulSoup import BeautifulSoup as Soup
+import urllib2
+
 
 
 def getBeautifulSoup(url):
@@ -15,20 +20,7 @@ def getBeautifulSoup(url):
     # Cierro la conexion
     response.close()
     # Creo el Soup
-    return BeautifulSoup(html_text)
-
-
-def getPeliculas(url, cine):
-    soup = getBeautifulSoup(url)
-    if cine == 'cineplanet':
-        # Obtengo Peliculas
-        for td in soup.find_all('td', class_="titulo_pelicula"):
-            print td.string.encode('utf-8', 'ignore')
-    elif cine == 'cinemark':
-        for a in soup.find_all('a', class_="black"):
-            peli = a.string.encode('utf-8', 'ignore')
-            if peli not in ['Olvidaste tu contraseña?','Regístrate','Inicio']:
-                print peli
+    return Soup(html_text)
 
 
 def getCines(url, cine):
@@ -75,6 +67,52 @@ def getHorarios(url, cine):
                 print div.h5.next_element.encode('utf-8', 'ignore')
                 print div.h5.span.string
                 print div.li.string
+
+
+import re
+
+
+def getPeliculas(url, cine):
+    soup = getBeautifulSoup(url)
+    if cine == 'cineplanet':
+        # Obtengo Peliculas
+        for td in soup.find_all('td', class_="titulo_pelicula"):
+            raw = (td.string.encode('utf-8', 'ignore')).upper()
+
+            patron = r'(\(?(3D|SUB|DOB|DIG)\)?)+'
+
+            regex = re.compile(patron)
+            #r = regex.search(raw)
+
+            peli = re.sub(patron, '', raw)
+
+            print len(regex.findall(raw))
+            print peli
+    elif cine == 'cinemark':
+        for a in soup.find_all('a', class_="black"):
+            peli = a.string.encode('utf-8', 'ignore')
+            if peli not in ['Olvidaste tu contraseña?','Regístrate','Inicio']:
+                print peli
+
+url = 'http://www.cineplanet.com.pe/cartelera.php'
+
+print "\n#-------PELICULAS---------#\n"
+getPeliculas(url, 'cineplanet')
+
+
+
+
+
+
+
+
+########################################################################
+
+
+
+
+
+
 
 
 def testingCineplanet():
