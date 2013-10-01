@@ -26,21 +26,21 @@ CINEPLANET = 01
 CINEMARK = 02
 
 SEDES = (
-        (CINEPLANET, 'Cineplanet'),
-        (CINEMARK, 'Cinemark')
+        (CINEPLANET, 'cineplanet'),
+        (CINEMARK, 'cinemark')
     )
 
 URL_PELICULAS = (
-        (CINEPLANET, 'Cineplanet'),
+        (CINEPLANET, 'http://www.cineplanet.com.pe/cartelera.php'),
         (CINEMARK, 'Cinemark')
     )
 
 URL_SEDES = (
-        (CINEPLANET, 'Cineplanet'),
+        (CINEPLANET, 'http://www.cineplanet.com.pe/nuestroscines.php'),
         (CINEMARK, 'Cinemark')
     )
 
 URL_CARTELERA = (
-        (CINEPLANET, 'Cineplanet'),
+        (CINEPLANET, 'http://www.cineplanet.com.pe/nuestroscines.php'),
         (CINEMARK, 'Cinemark')
     )

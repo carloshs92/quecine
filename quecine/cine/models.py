@@ -1,5 +1,5 @@
 from django.db import models
-from .utils import TIPO_PELICULA, SEDES
+from .utils import SEDES
 
 
 class Sede(models.Model):
@@ -26,7 +26,7 @@ class Pelicula(models.Model):
 class CinePeli(models.Model):
     pelicula = models.ForeignKey(Pelicula, related_name='cinepeli_pelicula')
     cine = models.ForeignKey(Cine, related_name='cinepeli_cine')
-    tipo = models.CharField(max_length=4, choices=TIPO_PELICULA)
+    tipo = models.CharField(max_length=10)
     horarios = models.CharField(max_length=300)
 
 

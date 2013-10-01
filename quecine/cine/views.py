@@ -2,8 +2,9 @@
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from .utils import getBeautifulSoup
-from .models import Pelicula, Cine #, CinePeli
+from .utils import CINEPLANET
+from .utils import getBeautifulSoup, URL_PELICULAS, URL_SEDES, URL_CARTELERA
+from .models import Pelicula, Cine, Sede #, CinePeli
 import json
 
 
@@ -19,10 +20,13 @@ def home(request):
 def sincronizar(request):
     Pelicula.objects.all().delete()
     Cine.objects.all().delete()
-    getPeliculas("http://www.cinemark-peru.com/cartelera", 'cinemark')
-    #getPeliculas("http://www.cineplanet.com.pe/cartelera.php", 'cineplanet')
-    #getCines("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
-    #getHorarios("http://www.cineplanet.com.pe/nuestroscines.php", 'cineplanet')
+    #getPeliculas("http://www.cinemark-peru.com/cartelera", 'cinemark')
+
+    sede = Sede.objects.get_or_create(sede=URL_SEDES[CINEPLANET])
+    getCines(URL_SEDES[CINEPLANET], CINEPLANET, sede)
+    getPeliculas(URL_PELICULAS[CINEPLANET], CINEPLANET, sede)
+    getHorarios(URL_CARTELERA[CINEPLANET], CINEPLANET, sede)
+
     data = dict()
     data['pelicula'] = Pelicula.objects.all()
     data['cine'] = Cine.objects.all()
@@ -42,7 +46,7 @@ def jsonpeliculas(request):
 
 def getPeliculas(url, cine):
     soup = getBeautifulSoup(url)
-    if cine == 'cineplanet':
+    if cine == CINEPLANET:
         # Obtengo Peliculas
         print soup.find_all('td')
         for td in soup.find_all('td', class_="titulo_pelicula"):
@@ -56,13 +60,14 @@ def getPeliculas(url, cine):
                 peli.save()
 
 
-def getCines(url, cine):
+def getCines(url, cine, sede):
     soup = getBeautifulSoup(url)
 
     if cine == 'cineplanet':
         for option in soup.find_all('option'):
-            c = Cine(cine=option.string.encode('utf-8', 'ignore'))
-            c.save()
+            Cine.objects.update_or_create(
+                cine=option.string.encode('utf-8', 'ignore'),
+                sede=sede)
     elif cine == 'cinemark':
         for h2 in soup.find_all('h2', class_='title2'):
             print h2.string.encode('utf-8', 'ignore')
