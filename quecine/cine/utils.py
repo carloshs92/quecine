@@ -22,8 +22,8 @@ def getBeautifulSoup(url):
 
 ############ DATOS ESTATICOS
 
-CINEPLANET = 01
-CINEMARK = 02
+CINEPLANET = 0
+CINEMARK = 1
 
 SEDES = (
         (CINEPLANET, 'cineplanet'),

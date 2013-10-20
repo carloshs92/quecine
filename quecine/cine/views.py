@@ -4,8 +4,9 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from .utils import CINEPLANET
 from .utils import getBeautifulSoup, URL_PELICULAS, URL_SEDES, URL_CARTELERA
-from .models import Pelicula, Cine, Sede #, CinePeli
+from .models import Pelicula, Cine, Sede, CinePeli
 import json
+import re
 
 
 def home(request):
@@ -17,15 +18,24 @@ def home(request):
         context_instance=RequestContext(request))
 
 
+def jsonpeliculas(request):
+    peliculas = Pelicula.objects.all()
+    return render_to_response(
+        'home/json.html', {'peliculas': json.dumps(peliculas)},
+        context_instance=RequestContext(request))
+
+
 def sincronizar(request):
     Pelicula.objects.all().delete()
     Cine.objects.all().delete()
     #getPeliculas("http://www.cinemark-peru.com/cartelera", 'cinemark')
-
-    sede = Sede.objects.get_or_create(sede=URL_SEDES[CINEPLANET])
-    getCines(URL_SEDES[CINEPLANET], CINEPLANET, sede)
-    getPeliculas(URL_PELICULAS[CINEPLANET], CINEPLANET, sede)
-    getHorarios(URL_CARTELERA[CINEPLANET], CINEPLANET, sede)
+    if not Sede.objects.filter(cod=CINEPLANET).exists():
+        sede = Sede(cod=CINEPLANET)
+        sede.save()
+    sede = Sede.objects.get(cod=CINEPLANET)
+    getCines(URL_SEDES[CINEPLANET][1], CINEPLANET, sede)
+    getPeliculas(URL_PELICULAS[CINEPLANET][1], CINEPLANET)
+    getHorarios(URL_CARTELERA[CINEPLANET][1], CINEPLANET)
 
     data = dict()
     data['pelicula'] = Pelicula.objects.all()
@@ -35,12 +45,6 @@ def sincronizar(request):
         context_instance=RequestContext(request))
 
 
-def jsonpeliculas(request):
-    peliculas = Pelicula.objects.all()
-    return render_to_response(
-        'home/json.html', {'peliculas': json.dumps(peliculas)},
-        context_instance=RequestContext(request))
-
 ####### Utlidades
 
 
@@ -48,10 +52,12 @@ def getPeliculas(url, cine):
     soup = getBeautifulSoup(url)
     if cine == CINEPLANET:
         # Obtengo Peliculas
-        print soup.find_all('td')
         for td in soup.find_all('td', class_="titulo_pelicula"):
-            peli = Pelicula(pelicula=td.string.encode('utf-8', 'ignore'))
-            peli.save()
+            raw=td.string.encode('utf-8', 'ignore').strip()
+            clean = re.sub(r'(\(?(3D|SUB|DOB|DIG|E)\)?)+', '', raw)
+            if not Pelicula.objects.filter(pelicula__icontains=clean):
+                peli = Pelicula(pelicula=clean.lower())
+                peli.save()
     elif cine == 'cinemark':
         for a in soup.find_all('a', class_="black"):
             title = a.string.encode('utf-8', 'ignore')
@@ -62,12 +68,15 @@ def getPeliculas(url, cine):
 
 def getCines(url, cine, sede):
     soup = getBeautifulSoup(url)
-
-    if cine == 'cineplanet':
+    if cine == CINEPLANET:
         for option in soup.find_all('option'):
-            Cine.objects.update_or_create(
-                cine=option.string.encode('utf-8', 'ignore'),
-                sede=sede)
+            cine_raw = option.string.encode('utf-8', 'ignore').strip()
+            if not Cine.objects.filter(cine__icontains=cine_raw).exists():
+                c = Cine(
+                    cod=option.attrs['value'],
+                    cine=cine_raw,
+                    sede=sede)
+                c.save()
     elif cine == 'cinemark':
         for h2 in soup.find_all('h2', class_='title2'):
             print h2.string.encode('utf-8', 'ignore')
@@ -76,24 +85,42 @@ def getCines(url, cine, sede):
 def getHorarios(url, cine):
     soup = getBeautifulSoup(url)
 
-    if cine == 'cineplanet':
+    if cine == CINEPLANET:
         for option in soup.find_all('option'):
+            cinepeli = None
             print '######################'
             print option.string.encode('utf-8', 'ignore')
             print '######################'
             peli = option.attrs['value']
             soup = getBeautifulSoup(url + "?complejo=%s" % peli)
+            cine = Cine.objects.get(pk=peli)
+            #complejo = soup.find('td', class_="titulo_pelicula2")
+            #s = Cine.objects
             n = 1
             cartelera = dict()
-
+            cinepeli = None
             for a in soup.find_all('a', class_="titulo_pelicula5"):
                 var = a.string.encode('utf-8', 'ignore').strip()
                 if n % 2 == 0:
-                    lista.append(var)
-                    cartelera[len(cartelera)+1] = lista
+                    horarios = re.sub(r'(\(?(3D|SUB|DOB|DIG)\)?)+', '', var)
+                    cinepeli.horarios = horarios
+                    cinepeli.save()
                 else:
-                    lista = list()
-                    lista.append(var)
+                    cinepeli = CinePeli()
+                    regex = re.compile(r'((3D|SUB|DOB|DIG))+')
+                    tipo = list()
+                    tipo_raw = regex.findall(var)
+                    if tipo_raw != 0:
+                        for i in range(len(tipo_raw)):
+                            tipo.append(tipo_raw[i][0])
+                            print tipo
+                            cinepeli.tipo = ", ".join(str(x) for x in tipo)
+                    peli = re.sub(r'(\(?(3D|SUB|DOB|DIG|E)\)?)+', '', var)
+                    cinepeli.cine = cine
+                    cinepeli.pelicula = Pelicula.objects.get(pelicula__icontains=peli)
+
+
+
                 n = n + 1
             print cartelera
     elif cine == 'cinemark':
@@ -106,3 +133,5 @@ def getHorarios(url, cine):
                 print div.h5.next_element.encode('utf-8', 'ignore')
                 print div.h5.span.string
                 print div.li.string
+
+
