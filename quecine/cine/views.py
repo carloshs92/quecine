@@ -6,7 +6,9 @@ from .utils import CINEPLANET
 from .utils import getBeautifulSoup, URL_PELICULAS, URL_SEDES, URL_CARTELERA
 from .models import Pelicula, Cine, Sede, CinePeli
 import json
+from django.http import (HttpResponse)
 import re
+from django.core import serializers
 
 
 def home(request):
@@ -19,11 +21,19 @@ def home(request):
 
 
 def jsonpeliculas(request):
-    peliculas = Pelicula.objects.all()
-    return render_to_response(
-        'home/json.html', {'peliculas': json.dumps(peliculas)},
-        context_instance=RequestContext(request))
+    data = serializers.serialize("json", Pelicula.objects.all())
+    return HttpResponse(data,
+             content_type="text/html;charset=utf-8")
 
+def jsoncines(request):
+    data = serializers.serialize("json", Cine.objects.all())
+    return HttpResponse(data,
+             content_type="text/html;charset=utf-8")
+
+def jsonhorarios(request):
+    data = serializers.serialize("json", CinePeli.objects.all())
+    return HttpResponse(data,
+             content_type="text/html;charset=utf-8")
 
 def sincronizar(request):
     Pelicula.objects.all().delete()
