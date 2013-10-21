@@ -30,3 +30,5 @@ class CinePeli(models.Model):
     horarios = models.CharField(max_length=300)
 
 
+
+

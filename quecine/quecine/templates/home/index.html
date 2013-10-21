@@ -54,7 +54,7 @@
 			$('#sincronizar').click(function(){
 				$.ajax({
 					type: "POST",
-					url: "http://127.0.0.1:8000/quecine/sincronizar/",
+					url: "http://127.0.0.1:8000/sincronizar/",
 					data: {csrfmiddlewaretoken:'{{ csrf_token }}'},
 				}).done(function(data){
 					$('#alert').append('<button type="button" class="close" data-dismiss="alert">&times;</button><strong>Warning!</strong> La información se ha sincronizado satisfactoriamente');

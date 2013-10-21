@@ -5,9 +5,11 @@ from django.template import RequestContext
 from .utils import CINEPLANET
 from .utils import getBeautifulSoup, URL_PELICULAS, URL_SEDES, URL_CARTELERA
 from .models import Pelicula, Cine, Sede, CinePeli
-import json
 from django.http import (HttpResponse)
 import re
+from rest_framework import viewsets
+from .serializers import (CineSerializer, PeliculaSerializer,
+HorarioSerializer, SedeSerializer)
 from django.core import serializers
 
 
@@ -20,20 +22,11 @@ def home(request):
         context_instance=RequestContext(request))
 
 
-def jsonpeliculas(request):
-    data = serializers.serialize("json", Pelicula.objects.all())
-    return HttpResponse(data,
-             content_type="text/html;charset=utf-8")
-
-def jsoncines(request):
-    data = serializers.serialize("json", Cine.objects.all())
-    return HttpResponse(data,
-             content_type="text/html;charset=utf-8")
-
 def jsonhorarios(request):
     data = serializers.serialize("json", CinePeli.objects.all())
     return HttpResponse(data,
              content_type="text/html;charset=utf-8")
+
 
 def sincronizar(request):
     Pelicula.objects.all().delete()
@@ -53,6 +46,38 @@ def sincronizar(request):
     return render_to_response(
         'home/data.html', data,
         context_instance=RequestContext(request))
+
+
+class SedeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Sede.objects.all()
+    serializer_class = SedeSerializer
+
+
+class CineViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Cine.objects.all()
+    serializer_class = CineSerializer
+
+
+class PeliculaViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Pelicula.objects.all()
+    serializer_class = PeliculaSerializer
+
+
+class HorarioViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = CinePeli.objects.all()
+    serializer_class = HorarioSerializer
 
 
 ####### Utlidades
