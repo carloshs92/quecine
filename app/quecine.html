@@ -59,26 +59,36 @@
 			
 			
 			$(document).ready(function(){
+				var URL = "http://192.168.1.35:8001/"
+				//var URL = "http://127.0.0.1:8000"
 				var CINE = new Object();
-				var urlCines = "http://192.168.1.33:8001/cines/"
-				var urlPeliculas = "http://192.168.1.33:8001/peliculas/"
-				var urlHorarios = "http://192.168.1.33:8001/get-horarios/"
+				var urlCines = URL + "cines/"
+				var urlPeliculas = URL + "peliculas/"
+				var urlHorarios = URL + "get-horarios/"
 				
 				CINE.CINEPLANET = 01;
 
+				function jsonpCallback(response){
+		      //$('#code').text();
+		      alert(response.data)
+		    }
+
 				$.ajax({
-					url: urlCines,					
+  				type: 'GET',
+					url: urlCines,	
+					async: false,
+					cache: false,			
 					timeout: 8000,
+					crossDomain: true,
   				dataType: 'jsonp',
-					success: function(res){
-				    alert(res.micallback.value)
-				  }
-        }).done(function(data) {
+  				jsonp: false,
+  				success: jsonpCallback
+        }).done(function() {
 					alert( "success" );
-				}).fail(function(error) {
-					alert( error.error);
+				}).fail(function(j, t, e) {
+					alert(e);
 				}).always(function() {
-					alert( "complete" );
+					console.log('always')
 				});
 
 			});

@@ -88,9 +88,11 @@ def getPeliculas(url, cine):
     if cine == CINEPLANET:
         # Obtengo Peliculas
         for td in soup.find_all('td', class_="titulo_pelicula"):
-            raw=td.string.encode('utf-8', 'ignore').strip()
-            clean = re.sub(r'(\(?(3D|SUB|DOB|DIG|E)\)?)+', '', raw)
-            if not Pelicula.objects.filter(pelicula__icontains=clean):
+            raw = td.string.encode('utf-8', 'ignore').strip()
+            clean = re.sub(u'(\(?(3D|SUB|DOB|DIG|\\\)\)?)+', '', raw)
+            clean = clean.strip()
+            if not Pelicula.objects.filter(pelicula__icontains=clean).exists():
+                print 'Pelicula Ingresada: ' + clean
                 peli = Pelicula(pelicula=clean.lower())
                 peli.save()
     elif cine == 'cinemark':
@@ -123,41 +125,42 @@ def getHorarios(url, cine):
     if cine == CINEPLANET:
         for option in soup.find_all('option'):
             cinepeli = None
-            print '######################'
-            print option.string.encode('utf-8', 'ignore')
-            print '######################'
+            #print '######################'
+            #print option.string.encode('utf-8', 'ignore')
+            #print '######################'
             peli = option.attrs['value']
             soup = getBeautifulSoup(url + "?complejo=%s" % peli)
             cine = Cine.objects.get(pk=peli)
-            #complejo = soup.find('td', class_="titulo_pelicula2")
-            #s = Cine.objects
             n = 1
-            cartelera = dict()
+            #cartelera = dict()
             cinepeli = None
             for a in soup.find_all('a', class_="titulo_pelicula5"):
                 var = a.string.encode('utf-8', 'ignore').strip()
                 if n % 2 == 0:
-                    horarios = re.sub(r'(\(?(3D|SUB|DOB|DIG)\)?)+', '', var)
+                    horarios = re.sub(u'(\(?(3D|SUB|DOB|DIG)\)?)+', '', var)
                     cinepeli.horarios = horarios
                     cinepeli.save()
                 else:
                     cinepeli = CinePeli()
-                    regex = re.compile(r'((3D|SUB|DOB|DIG))+')
+                    regex = re.compile(u'((3D|SUB|DOB|DIG))+')
                     tipo = list()
                     tipo_raw = regex.findall(var)
                     if tipo_raw != 0:
                         for i in range(len(tipo_raw)):
                             tipo.append(tipo_raw[i][0])
-                            print tipo
                             cinepeli.tipo = ", ".join(str(x) for x in tipo)
-                    peli = re.sub(r'(\(?(3D|SUB|DOB|DIG|E)\)?)+', '', var)
+                    peli = re.sub(u'(\(?(3D|SUB|DOB|DIG|\\\)\)?)+', '', var)
+                    peli = peli.strip()
                     cinepeli.cine = cine
-                    cinepeli.pelicula = Pelicula.objects.get(pelicula__icontains=peli)
-
-
-
+                    #verficando que la pelicula existe
+                    if Pelicula.objects.filter(pelicula__icontains=peli).exists():
+                        print 'peli buena: ' + peli
+                        cinepeli.pelicula = Pelicula.objects.get(pelicula__icontains=peli)
+                    else:
+                        print 'peli mala: ' + peli
+                        cinepeli.pelicula = Pelicula.objects.get(pelicula__icontains=peli[:7])
                 n = n + 1
-            print cartelera
+            #print cartelera
     elif cine == 'cinemark':
         for loc in soup.find_all('div', class_="item-block-details"):
             soup = getBeautifulSoup('http://www.cinemark-peru.com%s' % loc.a.attrs['href'])
