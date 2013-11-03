@@ -1,0 +1,13 @@
+{
+  "name": "Que Cine!",
+  "description": "Horarios de cines peruanos",
+  "launch_path": "/quecine.html",
+  "icons": {
+    "128": "/img/icon-128.png"
+  },
+  "developer": {
+    "name": "Carlos Cesar Huamani Sifuentes",
+    "url": "about.me/carloshs92"
+  },
+  "default_locale": "es-PE"
+}

@@ -48,33 +48,33 @@ def sincronizar(request):
         context_instance=RequestContext(request))
 
 
-class SedeViewSet(viewsets.ModelViewSet):
+class SedeViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows users to be viewed.
     """
     queryset = Sede.objects.all()
     serializer_class = SedeSerializer
 
 
-class CineViewSet(viewsets.ModelViewSet):
+class CineViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows users to be viewed.
     """
     queryset = Cine.objects.all()
     serializer_class = CineSerializer
 
 
-class PeliculaViewSet(viewsets.ModelViewSet):
+class PeliculaViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows groups to be viewed.
     """
     queryset = Pelicula.objects.all()
     serializer_class = PeliculaSerializer
 
 
-class HorarioViewSet(viewsets.ModelViewSet):
+class HorarioViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows groups to be viewed.
     """
     queryset = CinePeli.objects.all()
     serializer_class = HorarioSerializer

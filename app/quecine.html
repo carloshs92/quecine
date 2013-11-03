@@ -57,40 +57,95 @@
 		<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
 		<script type="text/javascript">
 			
-			
+			window.mycallback = function(data){
+				alert(data)
+			}
+		
 			$(document).ready(function(){
-				var URL = "http://192.168.1.35:8001/"
+				/*
+				function csrfSafeMethod(method) {
+				    // these HTTP methods do not require CSRF protection
+				    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+				}
+				$.ajaxSetup({
+				    crossDomain: true, // obviates need for sameOrigin test.
+    			  
+				    beforeSend: function(xhr, settings) {
+				        if (!csrfSafeMethod(settings.type)) {
+				            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				        }
+				    }
+				});
+
+				*/
+				var URL = "http://192.168.1.33:8001/"
 				//var URL = "http://127.0.0.1:8000"
 				var CINE = new Object();
-				var urlCines = URL + "cines/"
-				var urlPeliculas = URL + "peliculas/"
-				var urlHorarios = URL + "get-horarios/"
+				var urlCines = URL + "cines/?format=json"
+				var urlPeliculas = URL + "peliculas/?callback=myJsonMethod"
+				var urlHorarios = URL + "get-horarios/?callback=myJsonMethod"
 				
 				CINE.CINEPLANET = 01;
+				/*
+				$.getJSON(urlCines, function(data, textStatus){
+				    alert(data);
+				});
+				*/
+				
+				function createCORSRequest(method, url) {
+				  var xhr = new XMLHttpRequest();
+				  if ("withCredentials" in xhr) {
+				    // XHR for Chrome/Firefox/Opera/Safari.
+				    xhr.open(method, url, true);
+				  } else if (typeof XDomainRequest != "undefined") {
+				    // XDomainRequest for IE.
+				    xhr = new XDomainRequest();
+				    xhr.open(method, url);
+				  } else {
+				    // CORS not supported.
+				    xhr = null;
+				  }
+				  return xhr;
+				}
 
-				function jsonpCallback(response){
-		      //$('#code').text();
-		      alert(response.data)
-		    }
+				// Make the actual CORS request.
+				function makeCorsRequest(url, archivo) {
+				  // All HTML5 Rocks properties support CORS.
+				  var xhr = createCORSRequest('GET', url);
+				  if (!xhr) {
+				    alert('CORS not supported');
+				    return;
+				  }
 
+				  // Response handlers.
+				  xhr.onload = function() {
+				    var text = xhr.responseText;
+				    alert(text)
+				    //escribir archivo en sdcard
+				  };
+
+				  xhr.onerror = function(e) {
+				    alert(e);
+				  };
+
+				  xhr.send();
+				}
+
+				var cines = makeCorsRequest(urlCines);
+				alert(cines)
+				
+				/*
 				$.ajax({
   				type: 'GET',
 					url: urlCines,	
-					async: false,
-					cache: false,			
 					timeout: 8000,
-					crossDomain: true,
-  				dataType: 'jsonp',
-  				jsonp: false,
-  				success: jsonpCallback
-        }).done(function() {
-					alert( "success" );
+  				dataType: 'json'
+        }).done(function(data) {
+        	alert(JSON.parse(data))
 				}).fail(function(j, t, e) {
 					alert(e);
-				}).always(function() {
-					console.log('always')
 				});
-
+				*/
 			});
 		</script>
   </body>
