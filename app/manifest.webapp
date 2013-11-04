@@ -9,5 +9,9 @@
     "name": "Carlos Cesar Huamani Sifuentes",
     "url": "about.me/carloshs92"
   },
+  "type": "certified",
+  "permissions": {
+    "device-storage:apps":{ "access": "readwrite" }
+  },
   "default_locale": "es-PE"
 }
