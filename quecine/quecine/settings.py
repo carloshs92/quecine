@@ -18,27 +18,27 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-#DATABASES = {
-  #'default': {
-    #'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #'NAME': 'd2ps5sp67od1ra',
-    #'HOST': 'ec2-54-221-204-45.compute-1.amazonaws.com',
-    #'PORT': 5432,
-    #'USER': 'gnacpfwzmwqifi',
-    #'PASSWORD': 'oo1fh5WfKHlIx94l7eJNIlJY6C'
-  #}
-#}
-
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'quecine',
-    'HOST': 'localhost',
-    'PORT': '5432',
-    'USER': 'postgres',
-    'PASSWORD': 'carloscasa100'
+    'NAME': 'd2ps5sp67od1ra',
+    'HOST': 'ec2-54-221-204-45.compute-1.amazonaws.com',
+    'PORT': 5432,
+    'USER': 'gnacpfwzmwqifi',
+    'PASSWORD': 'oo1fh5WfKHlIx94l7eJNIlJY6C'
   }
 }
+
+#DATABASES = {
+  #'default': {
+    #'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #'NAME': 'quecine',
+    #'HOST': 'localhost',
+    #'PORT': '5432',
+    #'USER': 'postgres',
+    #'PASSWORD': 'carloscasa100'
+  #}
+#}
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -203,8 +203,8 @@ LOGGING = {
 }
 
 # Parse database configuration from $DATABASE_URL
-#import dj_database_url
-#DATABASES['default'] = dj_database_url.config()
+import dj_database_url
+DATABASES['default'] = dj_database_url.config()
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
-#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
