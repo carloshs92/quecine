@@ -24,6 +24,7 @@ DATABASES = {
     'NAME': 'd54r9me08pqnsu',
     'HOST': 'ec2-54-204-38-16.compute-1.amazonaws.com',
     'PORT': 5432,
+    
     'USER': 'sechaubqpmzdrz',
     'PASSWORD': 'vTQDS-4pKuWD1vAWyTM8eXq42B'
   }
