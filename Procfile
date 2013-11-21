@@ -1,1 +1,1 @@
-web: python quecine/manage.py syncdb
+web: python quecine/manage.py runserver 0.0.0.0:$PORT --noreload
