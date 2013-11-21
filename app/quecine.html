@@ -1,125 +1,275 @@
 <!DOCTYPE html>
 <html>
   <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no" />
-	<title>Que Cine</title>
-	<link rel="stylesheet" href="style/headers.css">
-	<link rel="stylesheet" href="style_unstable/drawer.css">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no" />
+		<title>Que Cine</title>
+		<link rel="stylesheet" href="style/headers.css">
+		<link rel="stylesheet" href="style_unstable/drawer.css">
 
-	<!-- Transitions -->
-    <link rel="stylesheet" href="transitions.css">
+		<!-- Transitions -->
+	    <link rel="stylesheet" href="transitions.css">
 
-	<!-- Util CSS: some extra tricks -->
-	<link rel="stylesheet" href="util.css">
-	<link rel="stylesheet" href="fonts.css">
+		<!-- Util CSS: some extra tricks -->
+		<link rel="stylesheet" href="util.css">
+		<link rel="stylesheet" href="fonts.css">
 
-	<!-- Additional markup to make Building Blocks kind of cross browser -->
-  	<link rel="stylesheet" href="cross_browser.css">
-  	<style type="text/css">
-  	  div[role="main"]{
-  	  	float: left;
-		width: 100%;
-		padding: 0px 15px;
-		height: 2000px!important;
-  	  }
-  	</style>
-  </head>
-  <body>
-	 	<section id="index" data-position="current">    
-			<!--MENU-->
+		<!-- Additional markup to make Building Blocks kind of cross browser -->
+	  	<link rel="stylesheet" href="cross_browser.css">
+
+	  	<style>
+		    #index {
+		      height: 100%;
+		    }
+		    [data-position="right"] {
+		      position: absolute;
+		      top: 0;
+		      left: 0;
+		      right: 0;
+		      bottom: 0;
+		      transform: translateX(100%);
+		      -webkit-transform: translateX(100%);
+		      z-index: 15;
+		      z-index: 100; /* -> drawer */
+		    }
+		    section[role="region"][data-position="right"] {
+		      position: absolute;
+		    }
+		    [data-position="right"].current {
+		      animation: rightToCurrent 0.4s forwards;
+		      -webkit-animation: rightToCurrent 0.4s forwards;
+		    }
+		    [data-position="right"].right {
+		      animation: currentToRight 0.4s forwards;
+		      -webkit-animation: currentToRight 0.4s forwards;
+		    }
+		    [data-position="current"].left {
+		      animation: currentToLeft 0.4s forwards;
+		      -webkit-animation: currentToLeft 0.4s forwards;
+		    }
+		    [data-position="current"].current {
+		      animation: leftToCurrent 0.4s forwards;
+		      -webkit-animation: leftToCurrent 0.4s forwards;
+		    }
+		    [data-position="back"] {
+		      position: absolute;
+		      top: 0;
+		      left: 0;
+		      right: 0;
+		      bottom: 0;
+		      z-index: -1;
+		      opacity: 0;
+		      /* z-index: 100; -> drawer */
+		    }
+		    [data-position="back"].fade-in {
+		      z-index: 120;
+		      animation: fadeIn 0.2s forwards;
+		      -webkit-animation: fadeIn 0.2s forwards;
+		    }
+		    [data-position="back"].fade-out {
+		      animation: fadeOut 0.2s forwards;
+		      -webkit-animation: fadeOut 0.2s forwards;
+		    }
+
+		    [data-position="edit-mode"] {
+		      position: absolute;
+		      top: -5rem;
+		      left: 0;
+		      right: 0;
+		      bottom: -7rem;
+		      z-index: -1;
+		      opacity: 0;
+		      transition: all 0.3s ease;
+		    }
+		    [data-position="edit-mode"].edit {
+		      position: absolute;
+		      top: 0;
+		      left: 0;
+		      right: 0;
+		      bottom: 0;
+		      z-index: 120;
+		      opacity: 1;
+		    }
+
+		    /* Headers */
+		    #headers section[role="region"] {
+		      margin-bottom: 1.5rem;
+		    }
+		    #headers section[role="region"]:not(#drawer) {
+		      display: inline;
+		    }
+		    #headers article header:first-child {
+		      margin-top: 1.5rem;
+		    }
+		    #headers section[role="region"] header h2 {
+		      margin: 0 0 1.5rem 0;
+		    }
+
+		    /* Lists */
+		    /* to avoid double background effect on press */
+		    [data-type=list] li>a:active { 
+		      background-color: transparent;
+		    }
+
+		    /* Drawer */
+		    section[role="region"]:not(#drawer) {
+		      transition: none;
+		      left: 0;
+		      z-index: 0;
+		      padding-left: 0;
+		    }
+		    section[data-type="sidebar"] + section[role="region"] > header:first-child > button, 
+		    section[data-type="sidebar"] + section[role="region"] > header:first-child > a {
+		      background-position: 3.5rem center;
+		    }
+
+		    /* Switches */
+		    #switches label:last-child {
+		      margin-left: 2rem;  
+		    }
+
+		    /* Scrolling */
+		    nav[data-type="scrollbar"] {
+		      padding-top: 1rem;
+		    }
+		    nav[data-type="scrollbar"] p {
+		      opacity: 1;
+		    }
+
+		    /* Seek bars */
+		    div[role="slider"] > label.icon {
+		      background: no-repeat right top;
+		      background-size: 3rem auto;
+		    }
+		    
+		    /* Tabs */
+		    #tabs .content {
+		      padding: 0;
+		    }
+		    #tabs .content .content {
+		      padding: 1.5rem 3rem;
+		    }
+
+		    /* Filters */
+		    [role="tablist"][data-type="filter"] {
+		      margin-bottom: 2rem;
+		    }
+
+		    .bottom[role="tablist"][data-type="filter"] {
+		      bottom: auto;
+		    }
+
+		    /* Device rotation */
+		    .landscape section[role="region"]#drawer > header:first-child {
+		      /* Whatever needs to be changed on landscape */
+		    }
+  		</style>
+
+    </head>
+    <body>
+	 	<section id="index" data-position="current">
 			<section data-type="sidebar">
-			  <header>
-			    <menu type="toolbar"></menu>
-			    <h1>Menu</h1>
-			  </header>
-			  <nav>
-			    <ul>
-			      <li><a href="#content">Peliculas</a></li>
-			      <li><a href="#content">Cines</a></li>
-			    </ul>
-			  </nav>
-			</section>
+		      <header>
+		        <h1>Menu</h1>
+		      </header>
+		      <nav>
+		        <ul>
+		          <li><a href="#">Peliculas</a></li>
+		          <li><a href="#" class="go-sedes">Cines</a></li>
+		          <li><a href="#">Favoritos</a></li>
+		          <li><a href="#">Acerca de Que Cine</a></li>
+		        </ul>
+		      </nav>
+		    </section>
 
-			<!--PRINCIPAL-->
+
 			<section id="drawer" role="region">
-			  <header>
-			  	<a href="#content"><span class="icon icon-menu">hide sidebar</span></a>
-		    	<a href="#drawer"><span class="icon icon-menu">show sidebar</span></a>
-		    	<h1>Que Cine</h1>
+			  <header class="fixed">
+			  	<a href="#"><span class="icon icon-menu">hide sidebar</span></a>
+		        <a href="#drawer"><span class="icon icon-menu">show sidebar</span></a>
+		        <h1>Que Cine <em>demo</em></h1>
 			  </header>
-			  <div role="main" id="principal">
-			  	<p>Hola</p>
-
-			  </div>
+			  <article  class="content scrollable header">
+			  	<div>
+				  	aqui aparecera los favoritos!
+			  	</div>
+			  </article>
 			</section>
 		</section>
+
+
+
+		<section id="sedes" role="region" data-position="right">
+		  <header class="fixed">
+		  	<a class="back-sedes" href="#"><span class="icon icon-back">back</span></a>
+	    	<h1>Que Cine</h1>
+		  </header>
+		  <article class="content header scrollable">
+		  	<div>
+			  	<ul id="lista_sedes">
+			  		<li><a href="#" data-cod="0">Cineplanet</a></li>
+			  	</ul>
+		  	</div>
+		  </article>
+		</section>
+
 		<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+		<script type="text/javascript" src="js/transitions.js"></script>
 		<script type="text/javascript">
-		
 			$(document).ready(function(){
-				
-				var URL = "http://192.168.1.33:8001/"
+				var URL = "http://quecine.herokuapp.com/"
 
 				var CINE = new Object();
-				CINE.CINEPLANET = 01;
+				CINE.CINEPLANET = 0;
 				
 				var urlCines = URL + "cines/?format=json"
 				var urlPeliculas = URL + "peliculas/?format=json"
 				var urlHorarios = URL + "get-horarios/?format=json"
 				
-				var sdcard = navigator.getDeviceStorage('apps');
+				var DataBase = {};
+				DataBase.indexedDB = {};
+
+				DataBase.indexedDB.db = null;
 
 				
-				function createCORSRequest(method, url) {
-				  var xhr = new XMLHttpRequest();
-				  if ("withCredentials" in xhr) {
-				    // XHR for Chrome/Firefox/Opera/Safari.
-				    xhr.open(method, url, true);
-				  } else if (typeof XDomainRequest != "undefined") {
-				    // XDomainRequest for IE.
-				    xhr = new XDomainRequest();
-				    xhr.open(method, url);
-				  } else {
-				    // CORS not supported.
-				    xhr = null;
-				  }
-				  return xhr;
-				}
 
-				// Make the actual CORS request.
-				function makeCorsRequest(url, fileName) {
-				  // All HTML5 Rocks properties support CORS.
-				  var xhr = createCORSRequest('GET', url);
-				  if (!xhr) {
-				    alert('CORS not supported');
-				    return;
-				  }
+				$.ajax({
+					dataType: "json",
+					url: urlCines,
+					success: function(data){
+						lista_cines = JSON.stringify(data);
+						//$.each(data, function(key, val){
+						//	lista_cines[]
+						//});
 
-				  // Response handlers.
-				  xhr.onload = function() {
-				    var text = xhr.responseText;
-				    var file   = new Blob([text], {type: "text/plain"});
-				    var request = sdcard.addNamed(file, fileName);
+						DataBase.indexedDB.open = function() {
+						  var request = indexedDB.open("DataBase");
 
-				    request.onsuccess = function () {
-						  var name = this.result;
-						  alert('File "' + name + '" successfully wrote on the sdcard storage area');
-						}
-				    //escribir archivo en sdcard
-				  };
+						  request.onsuccess = function(e) {
+						    DataBase.indexedDB.db = e.target.result;
+						    var db = DataBase.indexedDB.db;
+						    if(v!= db.version) {
+						      var setVrequest = db.setVersion(v);
 
-				  xhr.onerror = function(e) {
-				    alert(e);
-				  };
+						      // onsuccess is the only place we can create Object Stores
+						      setVrequest.onfailure = DataBase.indexedDB.onerror;
+						      setVrequest.onsuccess = function(e) {
+						        var store = db.createObjectStore("DataBase", {cine: lista_cines});
 
-				  xhr.send();
-				}
+						        console.log(DataBase.indexedDB.getAllTodoItems());
+						      };
+						    }
 
-				var cines = makeCorsRequest(urlCines, 'cines.json');
-				var peliculas = makeCorsRequest(urlPeliculas, 'peliculas.json');
-				var horarios = makeCorsRequest(urlHorarios, 'horarios.json');
+						    DataBase.indexedDB.getAllTodoItems();
+						  };
+
+						  request.onfailure = DataBase.indexedDB.onerror;
+						};
+					}
+				});
 				
+
+
 			});
 		</script>
   </body>
