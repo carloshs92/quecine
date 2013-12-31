@@ -217,6 +217,7 @@
 		<script type="text/javascript" src="js/transitions.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
+				//VARIABLES
 				var URL = "http://quecine.herokuapp.com/"
 
 				var CINE = new Object();
@@ -226,12 +227,118 @@
 				var urlPeliculas = URL + "peliculas/?format=json"
 				var urlHorarios = URL + "get-horarios/?format=json"
 				
-				var DataBase = {};
-				DataBase.indexedDB = {};
+				var quecine = {};
+				window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB;
 
-				DataBase.indexedDB.db = null;
+				if ('webkitIndexedDB' in window) {
+				  window.IDBTransaction = window.webkitIDBTransaction;
+				  window.IDBKeyRange = window.webkitIDBKeyRange;
+				}
 
+				quecine.indexedDB = {};
+				quecine.indexedDB.db = null;
+
+				quecine.indexedDB.onerror = function(e) {
+			  		console.log(e);
+				};
+
+				quecine.indexedDB.open = function() {
+					var version = 1;
+					var requestCines = indexedDB.open('cines', version);
+					var requestHorarios = indexedDB.open('horarios', version);
+					var requestPeliculas = indexedDB.open('peliculas', version);
+
+					request.onupgradeneeded = function(e) {
+					    var db = e.target.result;
+					    e.target.transaction.onerror = quecine.indexedDB.onerror;
+
+					    if(db.objectStoreNames.contains("cines")) {
+					    	db.deleteObjectStore("cines");
+					    }
+					    if(db.objectStoreNames.contains("horarios")) {
+					    	db.deleteObjectStore("horarios");
+					    }
+					    if(db.objectStoreNames.contains("peliculas")) {
+					    	db.deleteObjectStore("peliculas");
+					    }
+					    var storeCines = db.createObjectStore("cines", {keyPath: "cod"});
+					    var storeHorarios = db.createObjectStore("horarios", {keyPath: "cod"});
+					    var storePeliculas = db.createObjectStore("peliculas", {keyPath: "cod"});
+					};
+
+					request.onsuccess = function(e){
+						quecine.indexedDB.db = e.target.result;
+						alert('Se creo la base de datos')
+					}
+				};
+
+				quecine.indexedDB.addCinema = function(cod, cine, lat, lon, direccion, sede) {
+					var db = quecine.indexedDB.db;
+					var trans = db.transaction(["cines"], "readwrite");
+					var store = trans.objectStore("cines");
+					var request = store.put({
+				    	"cod": cod,
+				   		"cine": cine,
+				   		"lat": lat,
+				   		"lon" : lon,
+				   		"direccion": direccion,
+				   		"sede" : sede
+				  	});
+
+				    request.onsuccess = function(e) {
+				    	// Re-render all the todo's
+				    	//quecine.indexedDB.getAllTodoItems();
+				  		alert('Se guardo el cine exitosamente');
+				  	};
+
+				  	request.onerror = function(e) {
+				    	console.log(e.value);
+				  	};
+				};
+
+				quecine.indexedDB.addMovie = function(cod, pelicula, trailer) {
+					var db = quecine.indexedDB.db;
+					var trans = db.transaction(["peliculas"], "readwrite");
+					var store = trans.objectStore("peliculas");
+					var request = store.put({
+				    	"cod": cod,
+				   		"pelicula": pelicula,
+				   		"trailer": trailer
+				  	});
+
+				    request.onsuccess = function(e) {
+				    	// Re-render all the todo's
+				    	//quecine.indexedDB.getAllTodoItems();
+				  		console.log('Se guardo la pelicula exitosamente');
+				  	};
+
+				  	request.onerror = function(e) {
+				    	console.log(e.value);
+				  	};
+				};
 				
+				// var request = store.get(id); 
+				quecine.indexedDB.addSchedule = function(cod, pelicula, cine, horarios) {
+					var db = quecine.indexedDB.db;
+					var trans = db.transaction(["horarios"], "readwrite");
+					var store = trans.objectStore("horarios");
+					var request = store.put({
+				    	"cod": cod,
+				   		"pelicula": pelicula,
+				   		"cine": cine,
+				   		"horarios" : horarios
+				  	});
+
+				    request.onsuccess = function(e) {
+				    	// Re-render all the todo's
+				    	//quecine.indexedDB.getAllTodoItems();
+				  		console.log('Se guardo el horario exitosamente');
+				  	};
+
+				  	request.onerror = function(e) {
+				    	console.log(e.value);
+				  	};
+				};
 
 				$.ajax({
 					dataType: "json",
@@ -241,30 +348,6 @@
 						//$.each(data, function(key, val){
 						//	lista_cines[]
 						//});
-
-						DataBase.indexedDB.open = function() {
-						  var request = indexedDB.open("DataBase");
-
-						  request.onsuccess = function(e) {
-						    DataBase.indexedDB.db = e.target.result;
-						    var db = DataBase.indexedDB.db;
-						    if(v!= db.version) {
-						      var setVrequest = db.setVersion(v);
-
-						      // onsuccess is the only place we can create Object Stores
-						      setVrequest.onfailure = DataBase.indexedDB.onerror;
-						      setVrequest.onsuccess = function(e) {
-						        var store = db.createObjectStore("DataBase", {cine: lista_cines});
-
-						        console.log(DataBase.indexedDB.getAllTodoItems());
-						      };
-						    }
-
-						    DataBase.indexedDB.getAllTodoItems();
-						  };
-
-						  request.onfailure = DataBase.indexedDB.onerror;
-						};
 					}
 				});
 				
