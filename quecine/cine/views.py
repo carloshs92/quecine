@@ -91,10 +91,12 @@ def getPeliculas(url, cine):
             raw = td.string.encode('utf-8', 'ignore').strip()
             clean = re.sub(u'(\(?(3D|SUB|DOB|DIG|\\\)\)?)+', '', raw)
             clean = clean.strip()
+            print 'pelicula sin filtro: %s'%clean
             if not Pelicula.objects.filter(pelicula__icontains=clean).exists():
                 print 'Pelicula Ingresada: ' + clean
                 peli = Pelicula(pelicula=clean.lower())
                 peli.save()
+
     elif cine == 'cinemark':
         for a in soup.find_all('a', class_="black"):
             title = a.string.encode('utf-8', 'ignore')
@@ -158,7 +160,12 @@ def getHorarios(url, cine):
                         cinepeli.pelicula = Pelicula.objects.get(pelicula__icontains=peli)
                     else:
                         print 'peli mala: ' + peli
-                        cinepeli.pelicula = Pelicula.objects.get(pelicula__icontains=peli[:7])
+                        if Pelicula.objects.filter(pelicula__icontains=peli[:7]).exists():
+                            cinepeli.pelicula = Pelicula.objects.get(pelicula__icontains=peli[:7])
+                        else:
+                            pelicula_no_ingresada = Pelicula(pelicula=peli.lower())
+                            pelicula_no_ingresada.save()
+                            cinepeli.pelicula = pelicula_no_ingresada
                 n = n + 1
             #print cartelera
     elif cine == 'cinemark':
