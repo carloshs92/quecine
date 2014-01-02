@@ -24,4 +24,4 @@ class PeliculaSerializer(serializers.HyperlinkedModelSerializer):
 class HorarioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CinePeli
-        fields = ('pelicula', 'cine', 'tipo', 'horarios')
+        fields = ('id', 'pelicula', 'cine', 'tipo', 'horarios')
