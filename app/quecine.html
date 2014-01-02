@@ -225,7 +225,7 @@
 				
 				var urlCines = URL + "cines/?format=json"
 				var urlPeliculas = URL + "peliculas/?format=json"
-				var urlHorarios = URL + "get-horarios/?format=json"
+				var urlHorarios = URL + "horarios/?format=json"
 				
 				var quecine = {};
 				window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB;
@@ -244,31 +244,23 @@
 
 				quecine.indexedDB.open = function() {
 					var version = 1;
-					var requestCines = indexedDB.open('cines', version);
-					var requestHorarios = indexedDB.open('horarios', version);
-					var requestPeliculas = indexedDB.open('peliculas', version);
+					var request = indexedDB.open('quecine', version);
 
 					request.onupgradeneeded = function(e) {
 					    var db = e.target.result;
 					    e.target.transaction.onerror = quecine.indexedDB.onerror;
 
-					    if(db.objectStoreNames.contains("cines")) {
-					    	db.deleteObjectStore("cines");
-					    }
-					    if(db.objectStoreNames.contains("horarios")) {
-					    	db.deleteObjectStore("horarios");
-					    }
-					    if(db.objectStoreNames.contains("peliculas")) {
-					    	db.deleteObjectStore("peliculas");
+					    if(db.objectStoreNames.contains("quecine")) {
+					    	db.deleteObjectStore("quecine");
 					    }
 					    var storeCines = db.createObjectStore("cines", {keyPath: "cod"});
-					    var storeHorarios = db.createObjectStore("horarios", {keyPath: "cod"});
 					    var storePeliculas = db.createObjectStore("peliculas", {keyPath: "cod"});
+					    var storeHorarios = db.createObjectStore("horarios", {keyPath: "cod"});
 					};
 
 					request.onsuccess = function(e){
 						quecine.indexedDB.db = e.target.result;
-						alert('Se creo la base de datos')
+						console.log('Se creo la base de datos')
 					}
 				};
 
@@ -288,11 +280,11 @@
 				    request.onsuccess = function(e) {
 				    	// Re-render all the todo's
 				    	//quecine.indexedDB.getAllTodoItems();
-				  		alert('Se guardo el cine exitosamente');
+				  		console.log('Se guardo el cine exitosamente');
 				  	};
 
 				  	request.onerror = function(e) {
-				    	console.log(e.value);
+				    	console.log('exploto D:');
 				  	};
 				};
 
@@ -318,7 +310,7 @@
 				};
 				
 				// var request = store.get(id); 
-				quecine.indexedDB.addSchedule = function(cod, pelicula, cine, horarios) {
+				quecine.indexedDB.addSchedule = function(cod, pelicula, cine, tipo, horarios) {
 					var db = quecine.indexedDB.db;
 					var trans = db.transaction(["horarios"], "readwrite");
 					var store = trans.objectStore("horarios");
@@ -326,6 +318,7 @@
 				    	"cod": cod,
 				   		"pelicula": pelicula,
 				   		"cine": cine,
+				   		"tipo": tipo,
 				   		"horarios" : horarios
 				  	});
 
@@ -340,16 +333,56 @@
 				  	};
 				};
 
-				$.ajax({
-					dataType: "json",
-					url: urlCines,
-					success: function(data){
-						lista_cines = JSON.stringify(data);
-						//$.each(data, function(key, val){
-						//	lista_cines[]
-						//});
-					}
-				});
+				function cargarCines(){
+					$.ajax({
+						dataType: "json",
+						url: urlCines,
+						success: function(data){
+							$.each(data, function(key, val){
+								console.log(val.cine)
+								quecine.indexedDB.addCinema(val.cod, val.cine, 0, 0, "-", val.sede.split('/')[4]);
+							});
+						}
+					});
+				}
+
+				function cargarPeliculas(){
+					$.ajax({
+						dataType: "json",
+						url: urlPeliculas,
+						success: function(data){
+							$.each(data, function(key, val){
+								console.log(val.pelicula)
+								quecine.indexedDB.addMovie(val.cod, val.pelicula, "http://www.youtube.com/watch?v=EJ-bYOyQ46Y");
+							});
+						}
+					});
+				}
+
+				function cargarHorarios(){
+					$.ajax({
+						dataType: "json",
+						url: urlHorarios,
+						success: function(data){
+							$.each(data, function(key, val){
+								console.log(val.id)
+								quecine.indexedDB.addSchedule(val.id, val.pelicula.split('/')[4], val.cine.split('/')[4], val.tipo, val.horarios);
+							});
+						}
+					});
+				}
+
+			
+
+				function init() {
+				  quecine.indexedDB.open();
+				}
+
+				window.addEventListener("DOMContentLoaded", init, false);
+				
+				//cargarCines();
+				//cargarPeliculas();
+				//cargarHorarios();
 				
 
 
