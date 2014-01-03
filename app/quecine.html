@@ -6,7 +6,7 @@
 		<title>Que Cine</title>
 		<link rel="stylesheet" href="style/headers.css">
 		<link rel="stylesheet" href="style_unstable/drawer.css">
-
+		<link href="style_unstable/lists.css" rel="stylesheet" type="text/css">
 		<!-- Transitions -->
 	    <link rel="stylesheet" href="transitions.css">
 
@@ -174,30 +174,28 @@
 		      </header>
 		      <nav>
 		        <ul>
-		          <li><a href="#">Peliculas</a></li>
+		          <li><a href="#" class="list-movies">Peliculas</a></li>
 		          <li><a href="#" class="go-sedes">Cines</a></li>
 		          <li><a href="#">Favoritos</a></li>
-		          <li><a href="#">Acerca de Que Cine</a></li>
+		          <li><a href="#" class="go-about">Acerca de QueCine!</a></li>
 		        </ul>
 		      </nav>
 		    </section>
 
 
-			<section id="drawer" role="region">
+			<section id="drawer" role="region" data-type="list">
 			  <header class="fixed">
 			  	<a href="#"><span class="icon icon-menu">hide sidebar</span></a>
 		        <a href="#drawer"><span class="icon icon-menu">show sidebar</span></a>
 		        <h1>Que Cine <em>demo</em></h1>
 			  </header>
 			  <article  class="content scrollable header">
-			  	<div>
-				  	aqui aparecera los favoritos!
+			  	<div id="result">
+				  	<p>aqui aparecera los favoritos!</p>
 			  	</div>
 			  </article>
 			</section>
 		</section>
-
-
 
 		<section id="sedes" role="region" data-position="right">
 		  <header class="fixed">
@@ -213,181 +211,22 @@
 		  </article>
 		</section>
 
+		<section id="about" role="region" data-position="right">
+		  <header class="fixed">
+		  	<a class="back-about" href="#"><span class="icon icon-back">back</span></a>
+	    	<h1>Acerca de QueCine!</h1>
+		  </header>
+		  <article class="content header scrollable">
+		  	<div>
+			  	<p>QueCine! aplicativo para ver los horarios de los cines peruanos</p>
+			  	<p>Agradecimientos: </p>
+		  	</div>
+		  </article>
+		</section>
+
 		<script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
 		<script type="text/javascript" src="js/transitions.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function(){
-				//VARIABLES
-				var URL = "http://quecine.herokuapp.com/"
-
-				var CINE = new Object();
-				CINE.CINEPLANET = 0;
-				
-				var urlCines = URL + "cines/?format=json"
-				var urlPeliculas = URL + "peliculas/?format=json"
-				var urlHorarios = URL + "horarios/?format=json"
-				
-				var quecine = {};
-				window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB;
-
-				if ('webkitIndexedDB' in window) {
-				  window.IDBTransaction = window.webkitIDBTransaction;
-				  window.IDBKeyRange = window.webkitIDBKeyRange;
-				}
-
-				quecine.indexedDB = {};
-				quecine.indexedDB.db = null;
-
-				quecine.indexedDB.onerror = function(e) {
-			  		console.log(e);
-				};
-
-				quecine.indexedDB.open = function() {
-					var version = 1;
-					var request = indexedDB.open('quecine', version);
-
-					request.onupgradeneeded = function(e) {
-					    var db = e.target.result;
-					    e.target.transaction.onerror = quecine.indexedDB.onerror;
-
-					    if(db.objectStoreNames.contains("quecine")) {
-					    	db.deleteObjectStore("quecine");
-					    }
-					    var storeCines = db.createObjectStore("cines", {keyPath: "cod"});
-					    var storePeliculas = db.createObjectStore("peliculas", {keyPath: "cod"});
-					    var storeHorarios = db.createObjectStore("horarios", {keyPath: "cod"});
-					};
-
-					request.onsuccess = function(e){
-						quecine.indexedDB.db = e.target.result;
-						console.log('Se creo la base de datos')
-					}
-				};
-
-				quecine.indexedDB.addCinema = function(cod, cine, lat, lon, direccion, sede) {
-					var db = quecine.indexedDB.db;
-					var trans = db.transaction(["cines"], "readwrite");
-					var store = trans.objectStore("cines");
-					var request = store.put({
-				    	"cod": cod,
-				   		"cine": cine,
-				   		"lat": lat,
-				   		"lon" : lon,
-				   		"direccion": direccion,
-				   		"sede" : sede
-				  	});
-
-				    request.onsuccess = function(e) {
-				    	// Re-render all the todo's
-				    	//quecine.indexedDB.getAllTodoItems();
-				  		console.log('Se guardo el cine exitosamente');
-				  	};
-
-				  	request.onerror = function(e) {
-				    	console.log('exploto D:');
-				  	};
-				};
-
-				quecine.indexedDB.addMovie = function(cod, pelicula, trailer) {
-					var db = quecine.indexedDB.db;
-					var trans = db.transaction(["peliculas"], "readwrite");
-					var store = trans.objectStore("peliculas");
-					var request = store.put({
-				    	"cod": cod,
-				   		"pelicula": pelicula,
-				   		"trailer": trailer
-				  	});
-
-				    request.onsuccess = function(e) {
-				    	// Re-render all the todo's
-				    	//quecine.indexedDB.getAllTodoItems();
-				  		console.log('Se guardo la pelicula exitosamente');
-				  	};
-
-				  	request.onerror = function(e) {
-				    	console.log(e.value);
-				  	};
-				};
-				
-				// var request = store.get(id); 
-				quecine.indexedDB.addSchedule = function(cod, pelicula, cine, tipo, horarios) {
-					var db = quecine.indexedDB.db;
-					var trans = db.transaction(["horarios"], "readwrite");
-					var store = trans.objectStore("horarios");
-					var request = store.put({
-				    	"cod": cod,
-				   		"pelicula": pelicula,
-				   		"cine": cine,
-				   		"tipo": tipo,
-				   		"horarios" : horarios
-				  	});
-
-				    request.onsuccess = function(e) {
-				    	// Re-render all the todo's
-				    	//quecine.indexedDB.getAllTodoItems();
-				  		console.log('Se guardo el horario exitosamente');
-				  	};
-
-				  	request.onerror = function(e) {
-				    	console.log(e.value);
-				  	};
-				};
-
-				function cargarCines(){
-					$.ajax({
-						dataType: "json",
-						url: urlCines,
-						success: function(data){
-							$.each(data, function(key, val){
-								console.log(val.cine)
-								quecine.indexedDB.addCinema(val.cod, val.cine, 0, 0, "-", val.sede.split('/')[4]);
-							});
-						}
-					});
-				}
-
-				function cargarPeliculas(){
-					$.ajax({
-						dataType: "json",
-						url: urlPeliculas,
-						success: function(data){
-							$.each(data, function(key, val){
-								console.log(val.pelicula)
-								quecine.indexedDB.addMovie(val.cod, val.pelicula, "http://www.youtube.com/watch?v=EJ-bYOyQ46Y");
-							});
-						}
-					});
-				}
-
-				function cargarHorarios(){
-					$.ajax({
-						dataType: "json",
-						url: urlHorarios,
-						success: function(data){
-							$.each(data, function(key, val){
-								console.log(val.id)
-								quecine.indexedDB.addSchedule(val.id, val.pelicula.split('/')[4], val.cine.split('/')[4], val.tipo, val.horarios);
-							});
-						}
-					});
-				}
-
-			
-
-				function init() {
-				  quecine.indexedDB.open();
-				}
-
-				window.addEventListener("DOMContentLoaded", init, false);
-				
-				//cargarCines();
-				//cargarPeliculas();
-				//cargarHorarios();
-				
-
-
-			});
-		</script>
+		<script type="text/javascript" src="js/database.js"></script>
   </body>
 </html>
 	
